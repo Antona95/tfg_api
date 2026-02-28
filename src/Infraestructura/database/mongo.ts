@@ -1,21 +1,22 @@
 import mongoose from 'mongoose';
-// 1. IMPORTANTE: Ya no importamos 'dotenv' aquí, sino nuestra config validada
+import * as dns from 'dns'; // 1. AÑADE ESTO: Importa la librería nativa de Node
 import { config } from '../config/env';
+
+// 2. AÑADE ESTO: Obligamos a Node a resolver los DNS por su cuenta y esquivar el bug
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 export const connectMongoDB = async (): Promise<void> => {
   try {
-    // 2. Usamos config.MONGO_URI en vez de process.env...
-    // 3. Añadimos el Pooling (maxPoolSize) usando la variable que definimos
     await mongoose.connect(config.MONGO_URI, {
-      maxPoolSize: config.DB_POOL_SIZE, // Esto controla la escalabilidad
-      serverSelectionTimeoutMS: 5000, // Tiempo límite para intentar conectar
+      maxPoolSize: config.DB_POOL_SIZE,
+      serverSelectionTimeoutMS: 5000,
     });
 
     console.log(`Base de datos conectada: ${config.MONGO_URI}`);
     console.log(`Pool de conexiones: ${config.DB_POOL_SIZE}`);
   } catch (error) {
     console.error('Error conectando a MongoDB:', error);
-    process.exit(1); // Detiene la app si no hay base de datos
+    process.exit(1);
   }
 };
 

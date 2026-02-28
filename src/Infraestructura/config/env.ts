@@ -1,5 +1,12 @@
-import 'dotenv/config'; // Carga las variables del archivo .env automáticamente
+import { config as configDotenv } from 'dotenv';
 import { z } from 'zod';
+
+// 1. FORZAMOS la lectura del .env ANTES de que Zod actúe
+configDotenv();
+
+// 2. Un chivato temporal para ver si por fin lee el archivo (luego lo borramos)
+console.log('CHIVATO - Puerto leído del .env:', process.env.PORT);
+console.log('CHIVATO - Mongo leído del .env:', process.env.MONGO_URI);
 
 const envSchema = z.object({
   // Validamos que PORT sea un número. Si no existe, usa 3000 por defecto.

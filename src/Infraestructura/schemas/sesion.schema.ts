@@ -23,8 +23,7 @@ const _DetalleSesionSchema = z.object({
     .positive('Las repeticiones deben ser mayor a 0'),
 
   peso: z.number().nonnegative('El peso no puede ser negativo'), // Permite 0
-
-  observaciones: z.string().optional(),
+  bloque: z.number().optional().default(0), // Para biseries/triseries
 });
 
 // 2. Esquema principal de la Sesión (Lo que se guarda en BD)

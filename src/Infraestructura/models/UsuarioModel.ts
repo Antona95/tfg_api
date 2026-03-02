@@ -14,7 +14,7 @@ const UsuarioSchema = new Schema(
       type: String,
       required: true,
     },
-    contrasena: {
+    pass: {
       type: String,
       required: true,
     },

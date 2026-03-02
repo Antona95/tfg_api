@@ -6,8 +6,6 @@ export interface DetalleSesion {
   series: number;
   repeticiones: number;
   peso: number;
-  observaciones?: string;
-  // Identificador de agrupación de ejercicios
   // 0 o undefined = Ejercicio normal
   // 1, 2, 3... = Ejercicios que forman una biserie/triserie/circuito entre sí
   bloque?: number;

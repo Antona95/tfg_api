@@ -4,7 +4,7 @@ import { Usuario } from '../../../Dominio/models/usuario.model';
 export class LoginUsuarioUseCase {
   constructor(private readonly usuarioRepository: UsuarioRepository) {}
 
-  async execute(nickname: string, contrasena: string): Promise<Usuario> {
+  async execute(nickname: string, pass: string): Promise<Usuario> {
     // 1. Busqueda del usuario por su identificador unico
     const usuario = await this.usuarioRepository.getByNickname(nickname);
 
@@ -15,8 +15,8 @@ export class LoginUsuarioUseCase {
 
     // 3. Verificacion de credenciales
     // Se compara la contrasena almacenada con la proporcionada
-    if (usuario.contrasena !== contrasena) {
-      throw new Error('Contrasena incorrecta');
+    if (usuario.pass !== pass) {
+      throw new Error('pass incorrecta');
     }
 
     // 4. Retorno del objeto de dominio si la validacion es exitosa

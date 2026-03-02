@@ -52,7 +52,6 @@ export class UsuarioController {
   // --- CREATE USUARIO ---
   createUsuario = async (req: Request, res: Response) => {
     try {
-      // 1. Validamos que venga 'pass' desde Android
       const validacion = UsuarioSchema.safeParse(req.body);
 
       if (!validacion.success) {
@@ -61,18 +60,18 @@ export class UsuarioController {
 
       const datos = validacion.data;
 
-      // 2. Traducimos 'pass' a 'contrasena' para el dominio (sin usar "as any")
       const nuevo = await this.crearUsuarioUseCase.execute({
-        nickname: datos.nickname,
-        nombre: datos.nombre,
-        apellidos: datos.apellidos,
+        ...datos,
+        pass: datos.pass,
         rol: datos.rol,
-        contrasena: datos.pass, // Aquí hacemos la traducción explícita, sin forzar tipos
-      });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
 
       res.status(201).json(nuevo);
     } catch (error: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const err = error as any;
+      console.log('Error al crear un usuario', err);
       if (err.message && err.message.includes('existe'))
         return res.status(409).json({ error: err.message });
 

@@ -22,4 +22,3 @@ export class ListarUsuariosUseCase {
     return usuarios;
   }
 }
-//comentario

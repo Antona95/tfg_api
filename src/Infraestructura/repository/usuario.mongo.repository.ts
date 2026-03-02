@@ -51,7 +51,7 @@ export class UsuarioMongoRepository implements UsuarioRepository {
       id: mongoDoc._id.toString(),
       nombre: mongoDoc.nombre,
       apellidos: mongoDoc.apellidos,
-      contrasena: mongoDoc.contrasena,
+      pass: mongoDoc.pass,
       nickname: mongoDoc.nickname,
       rol: mongoDoc.rol,
       id_entrenador: mongoDoc.id_entrenador ? mongoDoc.id_entrenador.toString() : undefined,

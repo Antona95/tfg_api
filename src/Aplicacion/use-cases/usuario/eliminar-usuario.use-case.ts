@@ -8,14 +8,19 @@ export class EliminarUsuarioUseCase {
   ) {}
 
   async execute(nickname: string): Promise<boolean> {
-    // limpieza del nickname eliminando espacios en blanco al inicio y al final para evitar errores de búsqueda
-    const nicknameLimpio = nickname.trim();
+    // PROTECCIÓN DE NIVEL DE SISTEMA
+    if (nickname.toLowerCase() === 'mastercoach') {
+      throw new Error('No se permite eliminar al administrador del sistema');
+    }
+    const existente = await this.usuarioRepository.getByNickname(nickname);
+    if (!existente) {
+      throw new Error(`El usuario con nickname ${nickname} no existe`);
+    }
 
-    // llamada al repositorio para realizar el borrado físico del usuario usando su nickname
-    const eliminado = await this.usuarioRepository.delete(nicknameLimpio);
+    // 2. Ejecutamos la eliminación en el repositorio
+    const eliminado = await this.usuarioRepository.delete(nickname);
 
-    // si la eliminación en base de datos fue exitosa, invalidamos la caché de la lista general
-    // esto fuerza a que la próxima petición de "listar usuarios" consulte a la base de datos de nuevo
+    // 3. Limpiamos la caché para que el listado de alumnos se actualice en la App
     if (eliminado) {
       this.cache.del('users_all');
     }

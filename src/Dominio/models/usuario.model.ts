@@ -2,8 +2,8 @@ export interface Usuario {
   id?: string; // el id es opcional al crear, pero obligatorio al leer
   nombre: string;
   apellidos: string;
-  contrasena: string;
-  nickname: string; // ya cambiado a nickname
+  pass: string;
+  nickname: string;
 
   // nuevos campos requeridos
   rol: 'USUARIO' | 'ENTRENADOR'; // tipado estricto para el rol

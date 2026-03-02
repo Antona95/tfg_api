@@ -10,7 +10,6 @@ const DetalleSesionSchema = new Schema(
     series: { type: Number, required: true },
     repeticiones: { type: Number, required: true },
     peso: { type: Number, required: true },
-    observaciones: { type: String },
     bloque: { type: Number, default: 0 },
   },
   { _id: false },

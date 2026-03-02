@@ -3,19 +3,33 @@ import { SesionAppSchema } from '../schemas/sesion.schema';
 import { SesionService } from '../../Aplicacion/services/sesion.service';
 import { CrearSesionUseCase } from '../../Aplicacion/use-cases/sesion/crear-sesion.use-case';
 import { SesionRepository } from '../../Dominio/interfaces/sesion/sesion.repository.interface';
+import NodeCache from 'node-cache'; // Asegúrate de inyectar la caché aquí también
 
 export class SesionController {
   constructor(
     private readonly sesionService: SesionService,
     private readonly crearSesionUseCase: CrearSesionUseCase,
     private readonly sesionRepository: SesionRepository,
+    private readonly cache: NodeCache, // Añadido para gestionar la lectura
   ) {}
 
-  // --- NUEVO: MÉTODO PARA EL HISTORIAL ---
   getSesionesByUsuario = async (req: Request, res: Response) => {
     try {
       const { idUsuario } = req.params;
+      const cacheKey = `sesiones_usuario_${idUsuario}`;
+
+      // 1. Intentar obtener de caché
+      const cachedData = this.cache.get(cacheKey);
+      if (cachedData) {
+        return res.status(200).json(cachedData);
+      }
+
+      // 2. Si no hay caché, ir a BD
       const sesiones = await this.sesionRepository.findSesionesByUsuario(idUsuario);
+
+      // 3. Guardar en caché por 1 hora (3600 seg)
+      this.cache.set(cacheKey, sesiones, 3600);
+
       return res.status(200).json(sesiones);
     } catch (_error) {
       console.error('Error al obtener historial:', _error);
@@ -26,33 +40,40 @@ export class SesionController {
   createSesionApp = async (req: Request, res: Response) => {
     const validacion = SesionAppSchema.safeParse(req.body);
 
-    if (validacion.success) {
-      const datos = validacion.data;
-      try {
-        const nueva = await this.crearSesionUseCase.executeDesdeApp(
-          datos.idUsuario,
-          datos.titulo,
-          datos.fechaProgramada,
-          datos.ejercicios,
-        );
-        return res.status(201).json(nueva);
-      } catch (_error) {
-        console.error('Error creando sesión:', _error);
-        return res.status(500).json({ error: 'Error al procesar la sesión' });
-      }
-    } else {
+    if (!validacion.success) {
       return res.status(400).json({ errores: validacion.error.issues });
+    }
+
+    const datos = validacion.data;
+    try {
+      const nueva = await this.crearSesionUseCase.executeDesdeApp(
+        datos.idUsuario,
+        datos.titulo,
+        datos.fechaProgramada,
+        datos.ejercicios,
+      );
+      // El Caso de Uso ya se encarga de hacer this.cache.del
+      return res.status(201).json(nueva);
+    } catch (_error) {
+      console.error('Error creando sesión:', _error);
+      return res.status(500).json({ error: 'Error al procesar la sesión' });
     }
   };
 
   getSesionHoy = async (req: Request, res: Response) => {
     try {
       const { idUsuario } = req.params;
+      const cacheKey = `sesion_hoy_${idUsuario}`;
+
+      const cached = this.cache.get(cacheKey);
+      if (cached) return res.status(200).json(cached);
+
       const sesion = await this.sesionRepository.getSesionHoy(idUsuario);
-      if (!sesion) return res.status(404).json({ message: 'No hay entreno programado para hoy' });
+      if (!sesion) return res.status(404).json({ message: 'No hay entreno' });
+
+      this.cache.set(cacheKey, sesion, 3600);
       return res.status(200).json(sesion);
     } catch (_error) {
-      console.error(_error);
       return res.status(500).json({ error: 'Error de servidor' });
     }
   };
@@ -105,7 +126,6 @@ export class SesionController {
             repeticiones: ej.repeticiones,
             peso: ej.peso,
             bloque: ej.bloque,
-            observaciones: ej.observaciones,
           }));
         }
         const actualizada = await this.sesionService.actualizarSesion(id, datosParaActualizar);

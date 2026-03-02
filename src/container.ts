@@ -68,6 +68,11 @@ const ejercicioController = new EjercicioController(ejercicioService);
 const planController = new PlanController(planService, crearPlanUseCase, obtenerPlanActualUseCase);
 
 // CORREGIDO: Inyectamos sesionService, crearSesionUseCase Y sesionRepo
-const sesionController = new SesionController(sesionService, crearSesionUseCase, sesionRepo);
+const sesionController = new SesionController(
+  sesionService,
+  crearSesionUseCase,
+  sesionRepo,
+  appCache, // Inyectamos la misma instancia de caché para que el Controller pueda limpiar
+);
 
 export { usuarioController, ejercicioController, planController, sesionController };

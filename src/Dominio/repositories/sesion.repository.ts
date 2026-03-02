@@ -10,7 +10,7 @@ export interface SesionInputDTO {
     series: number;
     repeticiones: string | number; // Aceptamos ambos para evitar errores de tipo
     peso: number;
-    notas?: string;
+    bloque?: number;
   }[];
 }
 

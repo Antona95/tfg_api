@@ -70,7 +70,6 @@ export class SesionMockRepository implements SesionRepository {
         repeticiones:
           typeof ej.repeticiones === 'string' ? parseInt(ej.repeticiones) || 0 : ej.repeticiones,
         peso: ej.peso || 0,
-        notas: ej.observaciones, // Sincronizado con Dominio
         bloque: ej.bloque || 0,
       })),
     } as any;

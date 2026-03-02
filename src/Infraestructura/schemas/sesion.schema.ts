@@ -44,10 +44,6 @@ export const SesionAppSchema = z.object({
       series: z.coerce.number().int().positive(),
       repeticiones: z.union([z.string(), z.number()]),
       peso: z.coerce.number().nonnegative().optional().default(0),
-
-      // --- CORRECCIÓN 2: La App manda 'observaciones', no 'notas' ---
-      observaciones: z.string().optional(),
-
       bloque: z.number().optional().default(0),
     }),
   ),

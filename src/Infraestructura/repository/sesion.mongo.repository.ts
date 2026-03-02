@@ -84,7 +84,6 @@ export class SesionMongoRepository implements SesionRepository {
         series: ej.series,
         repeticiones: repsFinal,
         peso: ej.peso || 0,
-        observaciones: ej.observaciones,
         bloque: ej.bloque || 0,
       };
     });

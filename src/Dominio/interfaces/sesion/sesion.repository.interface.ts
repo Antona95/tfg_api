@@ -10,7 +10,6 @@ export interface SesionInputDTO {
     repeticiones: string | number;
     peso?: number;
     bloque?: number;
-    observaciones?: string;
   }>;
 }
 

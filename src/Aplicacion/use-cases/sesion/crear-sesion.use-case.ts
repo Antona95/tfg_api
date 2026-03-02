@@ -8,20 +8,18 @@ export class CrearSesionUseCase {
     private readonly cache: NodeCache,
   ) {}
 
+  // Método estándar (usado por otros servicios)
   async execute(sesion: SesionEntrenamiento): Promise<SesionEntrenamiento> {
     const nuevaSesion = await this.sesionRepository.create(sesion);
-    // Usamos el operador ?. por si id_plan viene undefined
-    if (sesion.id_plan) {
-      this.cache.del(`sesiones_plan_${sesion.id_plan}`);
-    }
+    this.limpiarCache(sesion.id_usuario, sesion.id_plan);
     return nuevaSesion;
   }
 
+  // Método específico para la App (usado por el Coach)
   async executeDesdeApp(
     idUsuario: string,
     titulo: string,
     fechaString: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ejercicios: any[],
   ): Promise<SesionEntrenamiento> {
     const fecha = new Date(fechaString);
@@ -30,20 +28,34 @@ export class CrearSesionUseCase {
       throw new Error('Fecha inválida proporcionada desde la App');
     }
 
-    // Aquí llamamos al repositorio usando la estructura exacta de 'SesionInputDTO'
-    return await this.sesionRepository.crearDesdeApp({
+    const nuevaSesion = await this.sesionRepository.crearDesdeApp({
       idUsuario,
       titulo,
       fechaProgramada: fecha.toISOString(),
       ejercicios: ejercicios.map((ej) => ({
-        // CORREGIDO: Usamos los nombres de la interfaz (DTO), no los del modelo de dominio.
         nombre: ej.nombre,
         series: ej.series,
-        repeticiones: ej.repeticiones, // Pasa string o number, tu interfaz lo acepta
+        repeticiones: ej.repeticiones,
         peso: ej.peso,
         bloque: ej.bloque,
-        observaciones: ej.observaciones,
       })),
     });
+
+    // --- LIMPIEZA DE CACHÉ ---
+    // Borramos tanto la sesión de hoy como el historial para que la App refresque
+    this.limpiarCache(idUsuario);
+
+    return nuevaSesion;
+  }
+
+  private limpiarCache(idUsuario?: string, idPlan?: string) {
+    if (idUsuario) {
+      // Estas keys deben coincidir con las que usas en el Repository/Controller para leer
+      this.cache.del(`sesiones_usuario_${idUsuario}`);
+      this.cache.del(`sesion_hoy_${idUsuario}`);
+    }
+    if (idPlan) {
+      this.cache.del(`sesiones_plan_${idPlan}`);
+    }
   }
 }

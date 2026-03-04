@@ -13,6 +13,7 @@ import { CrearPlanUseCase } from './Aplicacion/use-cases/plan/crear-plan.use-cas
 import { ObtenerPlanActualUseCase } from './Aplicacion/use-cases/plan/obtener-plan-actual.use-case';
 import { CrearUsuarioUseCase } from './Aplicacion/use-cases/usuario/crear-usuario.use-case';
 import { CrearSesionUseCase } from './Aplicacion/use-cases/sesion/crear-sesion.use-case';
+import { FinalizarSesionUseCase } from './Aplicacion/use-cases/sesion/finalizar-sesion.use-case';
 
 // importación de repositorios
 import { UsuarioMongoRepository } from './Infraestructura/repository/usuario.mongo.repository';
@@ -54,6 +55,8 @@ const crearPlanUseCase = new CrearPlanUseCase(planRepo, appCache);
 const obtenerPlanActualUseCase = new ObtenerPlanActualUseCase(planRepo, appCache);
 const crearSesionUseCase = new CrearSesionUseCase(sesionRepo, appCache);
 const crearUsuarioUseCase = new CrearUsuarioUseCase(usuarioRepo, appCache);
+const finalizarSesionUseCase = new FinalizarSesionUseCase(sesionRepo, appCache);
+
 // =============================================================
 // Controladores
 // =============================================================
@@ -71,6 +74,7 @@ const planController = new PlanController(planService, crearPlanUseCase, obtener
 const sesionController = new SesionController(
   sesionService,
   crearSesionUseCase,
+  finalizarSesionUseCase,
   sesionRepo,
   appCache, // Inyectamos la misma instancia de caché para que el Controller pueda limpiar
 );

@@ -3,14 +3,16 @@ import { SesionAppSchema } from '../schemas/sesion.schema';
 import { SesionService } from '../../Aplicacion/services/sesion.service';
 import { CrearSesionUseCase } from '../../Aplicacion/use-cases/sesion/crear-sesion.use-case';
 import { SesionRepository } from '../../Dominio/interfaces/sesion/sesion.repository.interface';
+import { FinalizarSesionUseCase } from '../../Aplicacion/use-cases/sesion/finalizar-sesion.use-case';
 import NodeCache from 'node-cache'; // Asegúrate de inyectar la caché aquí también
 
 export class SesionController {
   constructor(
     private readonly sesionService: SesionService,
     private readonly crearSesionUseCase: CrearSesionUseCase,
+    private readonly finalizarSesionUseCase: FinalizarSesionUseCase, // <--- Nuevo
     private readonly sesionRepository: SesionRepository,
-    private readonly cache: NodeCache, // Añadido para gestionar la lectura
+    private readonly cache: NodeCache,
   ) {}
 
   getSesionesByUsuario = async (req: Request, res: Response) => {
@@ -81,12 +83,19 @@ export class SesionController {
   finalizarSesion = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const actualizada = await this.sesionRepository.update(id, { finalizada: true });
-      if (!actualizada) return res.status(404).json({ message: 'Sesión no encontrada' });
+      const { ejercicios } = req.body;
+
+      // Validamos que vengan ejercicios (mínimo array vacío)
+      if (!Array.isArray(ejercicios)) {
+        return res.status(400).json({ error: 'Se requiere el array de ejercicios finales' });
+      }
+
+      const actualizada = await this.finalizarSesionUseCase.execute(id, ejercicios);
+
       return res.status(200).json(actualizada);
-    } catch (_error) {
-      console.error(_error);
-      return res.status(500).json({ error: 'Error al finalizar sesión' });
+    } catch (error: any) {
+      console.error('Error en finalizarSesion:', error.message);
+      return res.status(400).json({ error: error.message });
     }
   };
 

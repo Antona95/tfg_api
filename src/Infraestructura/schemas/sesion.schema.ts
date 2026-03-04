@@ -48,3 +48,14 @@ export const SesionAppSchema = z.object({
     }),
   ),
 });
+export const FinalizarSesionSchema = z.object({
+  ejercicios: z.array(
+    z.object({
+      nombre: z.string(),
+      series: z.coerce.number(),
+      repeticiones: z.union([z.string(), z.number()]),
+      peso: z.coerce.number().default(0),
+      bloque: z.number().optional().default(0),
+    }),
+  ),
+});

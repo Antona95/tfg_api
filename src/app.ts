@@ -24,8 +24,8 @@ app.use(express.json());
 
 // 2. CONFIGURAMOS EL ESCUDO GENERAL (RATE LIMIT)
 const limiterGeneral = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos de "memoria"
-  max: 10, // Límite de 10 peticiones por IP cada 15 minutos
+  windowMs: 10 * 60 * 1000, // 10 minutos de "memoria"
+  max: 1000, // Límite de 1000 peticiones por IP cada 10 minutos
   message: {
     error: 'Demasiadas peticiones desde esta IP, por favor intenta de nuevo en 15 minutos.',
   },

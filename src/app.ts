@@ -11,7 +11,6 @@ import { config } from './Infraestructura/config/env';
 // Importación de rutas
 import { usuarioRouter } from './Infraestructura/routes/usuario.route';
 import { ejercicioRouter } from './Infraestructura/routes/ejercicio.route';
-import { planRouter } from './Infraestructura/routes/plan.route';
 import { SesionRouter } from './Infraestructura/routes/sesion.route';
 
 const app = express();
@@ -47,7 +46,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
 // --- RUTAS DE LA API ---
 app.use('/api/usuarios', usuarioRouter);
 app.use('/api/ejercicios', ejercicioRouter);
-app.use('/api/planes', planRouter);
 app.use('/api/sesiones', SesionRouter);
 
 // Ruta base

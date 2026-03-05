@@ -15,11 +15,9 @@ export interface DetalleSesion {
 export interface SesionEntrenamiento {
   id?: string;
   titulo?: string; //Título de la sesión (Ej: "Día 1 - Pierna")
-  fecha: Date;
   finalizada: boolean;
 
   // RELACIONES
-  id_plan: string; // Pertenece a un plan
   id_usuario: string; // La hace un usuario
 
   // LISTA DE EJERCICIOS (Tu "Detalle_Sesion" está aquí dentro)

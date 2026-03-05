@@ -39,17 +39,14 @@ export class UsuarioService {
     return await this.listarUsuariosUC.execute();
   }
 
-  // cambio de dni a nickname en la búsqueda
   async obtenerPorNickname(nickname: string) {
     return await this.buscarUsuarioPorNicknameUC.execute(nickname);
   }
 
-  // cambio de dni a nickname para identificar al usuario a actualizar
   async actualizarUsuario(nickname: string, datos: Partial<Usuario>) {
     return await this.actualizarUsuarioUC.execute(nickname, datos);
   }
 
-  // cambio de dni a nickname para identificar al usuario a eliminar
   async eliminarUsuario(nickname: string) {
     return await this.eliminarUsuarioUC.execute(nickname);
   }

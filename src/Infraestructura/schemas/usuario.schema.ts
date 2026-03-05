@@ -9,7 +9,6 @@ export const UsuarioSchema = z.object({
     .trim(),
 
   pass: z.string().min(4, 'tu pass debe tener al menos 4 caracteres'),
-
   nombre: z.string().min(1, 'el nombre es obligatorio'),
   apellidos: z.string().min(1, 'los apellidos son obligatorios'),
 

@@ -43,8 +43,7 @@ describe('api usuarios - tests de integración', () => {
     const nuevoUsuario = {
       nombre: 'test',
       apellidos: 'user',
-      // nota: quitamos email porque no está en tu esquema de zod actual
-      contrasena: 'password123', // clave sin ñ
+      pass: 'password123', // clave sin ñ
       nickname: 'tester_pro', // identificador único
       rol: 'USUARIO',
     };
@@ -72,7 +71,7 @@ describe('api usuarios - tests de integración', () => {
     await request(app).post('/api/usuarios').send({
       nombre: 'flujo',
       apellidos: 'completo',
-      contrasena: 'securepass',
+      pass: 'securepass',
       nickname: nicknamePrueba,
       rol: 'ENTRENADOR',
     });

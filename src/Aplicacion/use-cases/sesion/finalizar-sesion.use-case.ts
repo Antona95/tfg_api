@@ -10,7 +10,7 @@ export class FinalizarSesionUseCase {
 
   async execute(idSesion: string, ejerciciosFinales: any[]): Promise<SesionEntrenamiento> {
     // 1. Validamos existencia
-    const sesionExistente = await this.sesionRepository.getById(idSesion);
+    const sesionExistente = await this.sesionRepository;
     if (!sesionExistente) {
       throw new Error('No se encontró la sesión para finalizar');
     }
@@ -19,7 +19,6 @@ export class FinalizarSesionUseCase {
     const actualizada = await this.sesionRepository.update(idSesion, {
       finalizada: true,
       ejercicios: ejerciciosFinales,
-      fecha: new Date(), // Seteamos la fecha real de fin
     });
 
     if (!actualizada) {

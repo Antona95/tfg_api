@@ -19,12 +19,9 @@ const DetalleSesionSchema = new Schema(
 const SesionSchema = new Schema<SesionEntrenamiento>(
   {
     titulo: { type: String, required: true },
-    fecha: { type: Date, default: Date.now },
     finalizada: { type: Boolean, default: false },
 
     // RELACIONES
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    id_plan: { type: Schema.Types.ObjectId as any, ref: 'Plan', required: true },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     id_usuario: { type: Schema.Types.ObjectId as any, ref: 'Usuario', required: true },
 

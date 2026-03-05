@@ -4,7 +4,6 @@ import NodeCache from 'node-cache';
 
 // importación de los casos de uso
 import { CrearSesionUseCase } from '../use-cases/sesion/crear-sesion.use-case';
-import { ObtenerSesionesPlanUseCase } from '../use-cases/sesion/obtener-sesiones-plan.use-case';
 import { ObtenerSesionPorIdUseCase } from '../use-cases/sesion/obtener-sesion-por-id.use-case';
 import { ActualizarSesionUseCase } from '../use-cases/sesion/actualizar-sesion.use-case';
 import { EliminarSesionUseCase } from '../use-cases/sesion/eliminar-sesion.use-case';
@@ -12,7 +11,6 @@ import { EliminarSesionUseCase } from '../use-cases/sesion/eliminar-sesion.use-c
 export class SesionService {
   // definición de propiedades privadas para los casos de uso
   private readonly crearSesionUC: CrearSesionUseCase;
-  private readonly obtenerSesionesPlanUC: ObtenerSesionesPlanUseCase;
   private readonly obtenerSesionPorIdUC: ObtenerSesionPorIdUseCase;
   private readonly actualizarSesionUC: ActualizarSesionUseCase;
   private readonly eliminarSesionUC: EliminarSesionUseCase;
@@ -26,7 +24,6 @@ export class SesionService {
 
     // instanciación de los casos de uso inyectando repositorio y caché
     this.crearSesionUC = new CrearSesionUseCase(this.sesionRepository, this.cache);
-    this.obtenerSesionesPlanUC = new ObtenerSesionesPlanUseCase(this.sesionRepository, this.cache);
     this.obtenerSesionPorIdUC = new ObtenerSesionPorIdUseCase(this.sesionRepository);
     this.actualizarSesionUC = new ActualizarSesionUseCase(this.sesionRepository, this.cache);
     this.eliminarSesionUC = new EliminarSesionUseCase(this.sesionRepository, this.cache);
@@ -43,13 +40,11 @@ export class SesionService {
   async crearDesdeApp(datos: {
     idUsuario: string;
     titulo: string;
-    fechaProgramada: string;
     ejercicios: any[];
   }): Promise<SesionEntrenamiento> {
     return await this.crearSesionUC.executeDesdeApp(
       datos.idUsuario,
       datos.titulo,
-      datos.fechaProgramada,
       datos.ejercicios,
     );
   }
@@ -58,11 +53,6 @@ export class SesionService {
   // método fachada para obtener sesión por id
   async obtenerPorId(id: string): Promise<SesionEntrenamiento | null> {
     return await this.obtenerSesionPorIdUC.execute(id);
-  }
-
-  // método fachada para obtener sesiones de un plan
-  async obtenerSesionesDelPlan(idPlan: string): Promise<SesionEntrenamiento[]> {
-    return await this.obtenerSesionesPlanUC.execute(idPlan);
   }
 
   // método fachada para actualizar sesión

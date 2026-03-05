@@ -19,14 +19,12 @@ describe('API Sesiones (Integración App)', () => {
     const payloadApp = {
       idUsuario: mockUsuarioId, // camelCase
       titulo: 'Entrenamiento de Pecho',
-      fechaProgramada: '2024-02-20',
       ejercicios: [
         {
           nombre: 'Press Banca', // La App manda el nombre
           series: 4,
           repeticiones: 10,
           peso: 80,
-          observaciones: 'RPE 8', // La App manda observaciones
           bloque: 1,
         },
       ],
@@ -58,7 +56,6 @@ describe('API Sesiones (Integración App)', () => {
     const payloadInvalido = {
       idUsuario: mockUsuarioId,
       titulo: 'Entreno Fail',
-      fechaProgramada: '2024-02-20',
       ejercicios: [
         {
           nombre: 'Sentadilla',

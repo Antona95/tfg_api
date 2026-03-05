@@ -11,7 +11,7 @@ export class CrearSesionUseCase {
   // Método estándar (usado por otros servicios)
   async execute(sesion: SesionEntrenamiento): Promise<SesionEntrenamiento> {
     const nuevaSesion = await this.sesionRepository.create(sesion);
-    this.limpiarCache(sesion.id_usuario, sesion.id_plan);
+    this.limpiarCache(sesion.id_usuario);
     return nuevaSesion;
   }
 
@@ -19,19 +19,13 @@ export class CrearSesionUseCase {
   async executeDesdeApp(
     idUsuario: string,
     titulo: string,
-    fechaString: string,
     ejercicios: any[],
   ): Promise<SesionEntrenamiento> {
-    const fecha = new Date(fechaString);
-
-    if (isNaN(fecha.getTime())) {
-      throw new Error('Fecha inválida proporcionada desde la App');
-    }
+    // 👈 aquí faltaba la llave
 
     const nuevaSesion = await this.sesionRepository.crearDesdeApp({
       idUsuario,
       titulo,
-      fechaProgramada: fecha.toISOString(),
       ejercicios: ejercicios.map((ej) => ({
         nombre: ej.nombre,
         series: ej.series,
@@ -42,20 +36,15 @@ export class CrearSesionUseCase {
     });
 
     // --- LIMPIEZA DE CACHÉ ---
-    // Borramos tanto la sesión de hoy como el historial para que la App refresque
     this.limpiarCache(idUsuario);
 
     return nuevaSesion;
   }
 
-  private limpiarCache(idUsuario?: string, idPlan?: string) {
+  private limpiarCache(idUsuario?: string) {
     if (idUsuario) {
-      // Estas keys deben coincidir con las que usas en el Repository/Controller para leer
       this.cache.del(`sesiones_usuario_${idUsuario}`);
       this.cache.del(`sesion_hoy_${idUsuario}`);
-    }
-    if (idPlan) {
-      this.cache.del(`sesiones_plan_${idPlan}`);
     }
   }
 }

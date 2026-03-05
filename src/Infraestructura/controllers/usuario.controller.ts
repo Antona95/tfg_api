@@ -128,8 +128,15 @@ export class UsuarioController {
       const eliminado = await this.usuarioService.eliminarUsuario(req.params.nickname);
       if (!eliminado) return res.status(404).json({ error: 'usuario no encontrado para eliminar' });
       res.json({ message: 'usuario eliminado correctamente' });
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      // console.error(error);
+
+      // Si el error es porque no existe, devolvemos un 404
+      if (error.message && error.message.includes('no existe')) {
+        return res.status(404).json({ error: error.message });
+      }
+
+      // Si es cualquier otra cosa rara, devolvemos el 500
       res.status(500).json({ error: 'error al eliminar usuario' });
     }
   };

@@ -6,6 +6,6 @@ export class ObtenerSesionPorIdUseCase {
 
   async execute(id: string): Promise<SesionEntrenamiento | null> {
     // recuperación directa de la sesión por su identificador único
-    return await this.sesionRepository.getById(id);
+    return await this.sesionRepository.findById(id);
   }
 }

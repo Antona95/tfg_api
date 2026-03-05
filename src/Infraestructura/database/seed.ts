@@ -1,7 +1,6 @@
 import { connectMongoDB, disconnectMongoDB } from './mongo';
 import { UsuarioModel } from '../models/UsuarioModel';
 import { EjercicioModel } from '../models/EjercicioModel';
-import { PlanModel } from '../models/PlanModel';
 import { SesionModel } from '../models/SesionModel';
 
 const seed = async () => {
@@ -11,7 +10,6 @@ const seed = async () => {
     console.log('Limpiando colecciones...');
     await UsuarioModel.deleteMany({});
     await EjercicioModel.deleteMany({});
-    await PlanModel.deleteMany({});
     await SesionModel.deleteMany({});
 
     console.log('Creando usuarios...');
@@ -37,18 +35,9 @@ const seed = async () => {
     const ejercicio2 = await EjercicioModel.create({ nombre: 'Press de banca' });
     const ejercicio3 = await EjercicioModel.create({ nombre: 'Peso muerto' });
 
-    console.log('Creando plan...');
-    const plan = await PlanModel.create({
-      objetivo_principal: 'Aumentar fuerza',
-      id_usuario: usuario._id.toString(),
-      fecha_inicio: new Date(),
-    });
-
     console.log('Creando sesión de entrenamiento...');
     const sesion = await SesionModel.create({
-      fecha: new Date(),
       finalizada: false,
-      id_plan: plan._id.toString(),
       id_usuario: usuario._id.toString(),
       ejercicios: [
         { id_ejercicio: ejercicio1._id.toString(), series: 3, repeticiones: 10, peso: 50 },
@@ -60,7 +49,6 @@ const seed = async () => {
     console.log('Seed completado:');
     console.log(`Usuario: ${usuario._id}`);
     console.log(`Entrenador: ${entrenador._id}`);
-    console.log(`Plan: ${plan._id}`);
     console.log(`Sesion: ${sesion._id}`);
     console.log(`Ejercicios: ${ejercicio1._id}, ${ejercicio2._id}, ${ejercicio3._id}`);
 

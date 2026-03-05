@@ -4,7 +4,6 @@ import { SesionEntrenamiento } from '../models/sesion.model';
 export interface SesionInputDTO {
   idUsuario: string; // ID del usuario (String)
   titulo: string;
-  fechaProgramada: Date;
   ejercicios: {
     nombreEjercicio: string; // Android manda el nombre, no el ID
     series: number;

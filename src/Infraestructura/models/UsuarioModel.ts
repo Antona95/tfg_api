@@ -40,6 +40,5 @@ const UsuarioSchema = new Schema(
     versionKey: false, // elimina el campo __v interno de mongo
   },
 );
-
 // aquí sí vinculamos la interfaz usuario para que el resto de la app tenga autocompletado
 export const UsuarioModel = model<Usuario>('Usuario', UsuarioSchema);

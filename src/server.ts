@@ -16,7 +16,6 @@ const startServer = async () => {
       console.log(`Rutas activas:`);
       console.log(`   - /api/usuarios`);
       console.log(`   - /api/ejercicios`);
-      console.log(`   - /api/planes`);
       console.log(`   - /api/sesiones`);
     });
   } catch (error) {

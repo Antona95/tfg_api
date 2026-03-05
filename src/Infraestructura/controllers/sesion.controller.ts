@@ -51,7 +51,6 @@ export class SesionController {
       const nueva = await this.crearSesionUseCase.executeDesdeApp(
         datos.idUsuario,
         datos.titulo,
-        datos.fechaProgramada,
         datos.ejercicios,
       );
       // El Caso de Uso ya se encarga de hacer this.cache.del
@@ -107,16 +106,6 @@ export class SesionController {
       res.json(sesion);
     } catch (_error) {
       res.status(500).json({ error: 'Error al obtener sesión' });
-    }
-  };
-
-  getSesionesByPlan = async (req: Request, res: Response) => {
-    try {
-      const { idPlan } = req.params;
-      const sesiones = await this.sesionService.obtenerSesionesDelPlan(idPlan);
-      res.json(sesiones);
-    } catch (_error) {
-      res.status(500).json({ error: 'Error interno' });
     }
   };
 

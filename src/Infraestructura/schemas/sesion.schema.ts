@@ -34,13 +34,11 @@ const _DetalleSesionSchema = z.object({
 export const SesionAppSchema = z.object({
   idUsuario: z.string().min(1, 'El ID de usuario es obligatorio'),
   titulo: z.string().min(1, 'El título es obligatorio'),
-  fechaProgramada: z.string(),
 
   ejercicios: z.array(
     z.object({
       // --- CORRECCIÓN 1: La App manda 'nombre', no 'nombreEjercicio' ---
       nombre: z.string().min(1, 'El nombre del ejercicio es obligatorio'),
-
       series: z.coerce.number().int().positive(),
       repeticiones: z.union([z.string(), z.number()]),
       peso: z.coerce.number().nonnegative().optional().default(0),

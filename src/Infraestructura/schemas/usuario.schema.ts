@@ -8,7 +8,7 @@ export const UsuarioSchema = z.object({
     .max(20, 'el nickname no puede superar los 20 caracteres')
     .trim(),
 
-  pass: z.string().min(4, 'tu pass debe tener al menos 4 caracteres'),
+  pass: z.string().min(2, 'tu pass debe tener al menos 2 caracteres'),
   nombre: z.string().min(1, 'el nombre es obligatorio'),
   apellidos: z.string().min(1, 'los apellidos son obligatorios'),
 

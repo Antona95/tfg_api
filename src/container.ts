@@ -1,5 +1,12 @@
 import NodeCache from 'node-cache';
 
+// ============================================================================
+// APUNTE DE CLASE (DAM): EL ARCHIVO CONTAINER (El cerebro del ensamblaje)
+// ============================================================================
+// Este archivo funciona como un contenedor de Inyección de Dependencias manual.
+// Aquí es el ÚNICO lugar de toda la app donde usamos la palabra "new" para
+// instanciar nuestras clases, pasándole a cada una lo que necesita para vivir.
+
 // importación de servicios
 import { UsuarioService } from './Aplicacion/services/usuario.service';
 import { EjercicioService } from './Aplicacion/services/ejercicio.service';
@@ -11,6 +18,7 @@ import { ListarClientesUseCase } from './Aplicacion/use-cases/usuario/listar-cli
 import { CrearUsuarioUseCase } from './Aplicacion/use-cases/usuario/crear-usuario.use-case';
 import { CrearSesionUseCase } from './Aplicacion/use-cases/sesion/crear-sesion.use-case';
 import { FinalizarSesionUseCase } from './Aplicacion/use-cases/sesion/finalizar-sesion.use-case';
+import { EliminarUsuarioUseCase } from './Aplicacion/use-cases/usuario/eliminar-usuario.use-case'; // <--- NUEVO
 
 // importación de repositorios
 import { UsuarioMongoRepository } from './Infraestructura/repository/usuario.mongo.repository';
@@ -27,9 +35,11 @@ import { SesionController } from './Infraestructura/controllers/sesion.controlle
 
 const isTest = process.env.NODE_ENV === 'test';
 const appCache = new NodeCache({ stdTTL: 300 });
+
 // =============================================================
 // Infraestructura (Repositorios)
 // =============================================================
+// Instanciamos los objetos que hablan directamente con MongoDB (o con Mocks si es test)
 const usuarioRepo = isTest ? new UsuarioMockRepository() : new UsuarioMongoRepository();
 const ejercicioRepo = isTest ? new EjercicioMockRepository() : new EjercicioMongoRepository();
 const sesionRepo = isTest ? new SesionMockRepository() : new SesionMongoRepository();
@@ -47,25 +57,32 @@ const crearSesionUseCase = new CrearSesionUseCase(sesionRepo, appCache);
 const crearUsuarioUseCase = new CrearUsuarioUseCase(usuarioRepo, appCache);
 const finalizarSesionUseCase = new FinalizarSesionUseCase(sesionRepo, appCache);
 
+// Aquí instanciamos nuestro Caso de Uso de Eliminar.
+// Fíjate que requiere TANTO el repositorio de usuarios (para borrar al alumno)
+// COMO el repositorio de sesiones (para el borrado en cascada), más la caché.
+const eliminarUsuarioUseCase = new EliminarUsuarioUseCase(usuarioRepo, sesionRepo, appCache); // <--- NUEVO
+
 // =============================================================
-// Controladores
+// Controladores (El punto de entrada web)
 // =============================================================
 
+// Ensamblamos el UsuarioController pasándole todas las piezas que requiere su constructor.
 const usuarioController = new UsuarioController(
   usuarioService,
   loginUseCase,
   listarClientesUseCase,
   crearUsuarioUseCase,
+  eliminarUsuarioUseCase, // <--- NUEVO: Le inyectamos el caso de uso como 5º parámetro
 );
+
 const ejercicioController = new EjercicioController(ejercicioService);
 
-// CORREGIDO: Inyectamos sesionService, crearSesionUseCase Y sesionRepo
 const sesionController = new SesionController(
   sesionService,
   crearSesionUseCase,
   finalizarSesionUseCase,
   sesionRepo,
-  appCache, // Inyectamos la misma instancia de caché para que el Controller pueda limpiar
+  appCache,
 );
 
 export { usuarioController, ejercicioController, sesionController };

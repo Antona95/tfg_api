@@ -65,7 +65,12 @@ export class SesionMongoRepository implements SesionRepository {
     return !!res;
   }
 
-  // Dentro de SesionMongoRepository
+  // Busca todos los entrenamientos de esta persona y destrúyelo
+  async deleteManyByUsuario(idUsuario: string): Promise<boolean> {
+    const res = await SesionModel.deleteMany({ id_usuario: idUsuario });
+    // deleteMany devuelve un objeto con deletedCount.
+    return res.acknowledged;
+  }
 
   async crearDesdeApp(datos: SesionInputDTO): Promise<SesionEntrenamiento> {
     const ejerciciosMongoose = datos.ejercicios.map((ej) => {

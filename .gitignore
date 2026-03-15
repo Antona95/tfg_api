@@ -5,11 +5,7 @@ node_modules/
 dist/
 *.tsbuildinfo
 
-# --- Variables de Entorno y Secretos (CRÍTICO) ---
-.env
-.env.test
-.env.production
-.env.local
+
 # Excepción: Si creas un ejemplo seguro, sí se sube
 !*.example
 
@@ -42,8 +38,7 @@ Thumbs.db
 .idea/
 *.iml
 
-# --- Herramientas de Calidad (ESLint / Prettier) ---
-.eslintcache
+
 
 # --- Husky (Git Hooks) ---
 # Queremos subir los hooks, pero no los scripts internos autogenerados

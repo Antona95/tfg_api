@@ -19,4 +19,4 @@ router.delete('/:id', sesionController.deleteSesion);
 // Ruta para finalizar
 router.patch('/:id/finalizar', sesionController.finalizarSesion);
 
-export { router as SesionRouter };
+export { router as sesionRouter };

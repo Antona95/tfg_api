@@ -14,10 +14,9 @@ export class SesionMockRepository implements SesionRepository {
   }
 
   async findById(id: string): Promise<SesionEntrenamiento | null> {
-    return this.sesiones.find((s) => (s as any).id === id) || null;
+    return this.sesiones.find((s) => s.id === id) || null;
   }
 
-  // --- NUEVO: Necesario para que el Mock cumpla con la interfaz ---
   async findSesionesByUsuario(idUsuario: string): Promise<SesionEntrenamiento[]> {
     return this.sesiones.filter((s) => s.id_usuario === idUsuario);
   }
@@ -30,16 +29,22 @@ export class SesionMockRepository implements SesionRepository {
     id: string,
     datos: Partial<SesionEntrenamiento>,
   ): Promise<SesionEntrenamiento | null> {
-    const index = this.sesiones.findIndex((s) => (s as any).id === id);
+    const index = this.sesiones.findIndex((s) => s.id === id);
     if (index === -1) return null;
+
     this.sesiones[index] = { ...this.sesiones[index], ...datos };
     return this.sesiones[index];
   }
 
   async delete(id: string): Promise<boolean> {
     const inicial = this.sesiones.length;
-    this.sesiones = this.sesiones.filter((s) => (s as any).id !== id);
+    this.sesiones = this.sesiones.filter((s) => s.id !== id);
     return this.sesiones.length < inicial;
+  }
+
+  async deleteManyByUsuario(idUsuario: string): Promise<boolean> {
+    this.sesiones = this.sesiones.filter((s) => s.id_usuario !== idUsuario);
+    return true;
   }
 
   async crearDesdeApp(datos: SesionInputDTO): Promise<SesionEntrenamiento> {
@@ -48,9 +53,8 @@ export class SesionMockRepository implements SesionRepository {
       titulo: datos.titulo,
       finalizada: false,
       id_usuario: datos.idUsuario,
-
       ejercicios: datos.ejercicios.map((ej, index) => ({
-        nombreEjercicio: ej.nombre, // Sincronizado con Dominio
+        nombre: ej.nombre,
         id_ejercicio: 'ejercicio-mock-' + index,
         series: ej.series,
         repeticiones:
@@ -58,7 +62,7 @@ export class SesionMockRepository implements SesionRepository {
         peso: ej.peso || 0,
         bloque: ej.bloque || 0,
       })),
-    } as any;
+    };
 
     this.sesiones.push(nuevaSesionMock);
     return nuevaSesionMock;

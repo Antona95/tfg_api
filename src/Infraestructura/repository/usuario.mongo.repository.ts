@@ -1,60 +1,42 @@
 import { UsuarioRepository } from '../../Dominio/interfaces/usuario/usuario.repository.interface';
 import { Usuario } from '../../Dominio/models/usuario.model';
-import { UsuarioModel } from '../models/UsuarioModel';
 
-export class UsuarioMongoRepository implements UsuarioRepository {
+export class UsuarioMockRepository implements UsuarioRepository {
+  private usuarios: Usuario[] = [];
+
   async create(usuario: Usuario): Promise<Usuario> {
-    const nuevo = await UsuarioModel.create(usuario);
-    return this.mapToDomain(nuevo);
+    const nuevo = { ...usuario, id: usuario.id || 'mock-id-' + Date.now() };
+    this.usuarios.push(nuevo);
+    return nuevo;
   }
 
   async getAll(): Promise<Usuario[]> {
-    const docs = await UsuarioModel.find().lean();
-    return docs.map((d) => this.mapToDomain(d));
+    return this.usuarios;
   }
 
-  // Se flexibiliza el tipo para aceptar los roles reales usados en el proyecto
-  async getByRol(rol: string): Promise<Usuario[]> {
-    // Buscamos ignorando mayusculas/minusculas para evitar errores de registro
-    const docs = await UsuarioModel.find({
-      rol: { $regex: new RegExp(`^${rol}$`, 'i') },
-    }).lean();
-    return docs.map((d) => this.mapToDomain(d));
+  async getByRol(rol: 'USUARIO' | 'ENTRENADOR'): Promise<Usuario[]> {
+    return this.usuarios.filter((u) => u.rol.toLowerCase() === rol.toLowerCase());
   }
 
   async getByNickname(nickname: string): Promise<Usuario | null> {
-    // Buscamos el nickname de forma insensible a mayusculas/minusculas (^ y $ aseguran coincidencia exacta)
-    const doc = await UsuarioModel.findOne({
-      nickname: { $regex: new RegExp(`^${nickname}$`, 'i') },
-    }).lean();
-
-    if (!doc) return null;
-    return this.mapToDomain(doc);
+    return this.usuarios.find((u) => u.nickname.toLowerCase() === nickname.toLowerCase()) || null;
   }
 
   async update(nickname: string, data: Partial<Usuario>): Promise<Usuario | null> {
-    const doc = await UsuarioModel.findOneAndUpdate({ nickname: nickname }, data, {
-      new: true,
-    }).lean();
+    const index = this.usuarios.findIndex(
+      (u) => u.nickname.toLowerCase() === nickname.toLowerCase(),
+    );
+    if (index === -1) return null;
 
-    if (!doc) return null;
-    return this.mapToDomain(doc);
+    this.usuarios[index] = { ...this.usuarios[index], ...data };
+    return this.usuarios[index];
   }
 
   async delete(nickname: string): Promise<boolean> {
-    const result = await UsuarioModel.findOneAndDelete({ nickname: nickname });
-    return !!result;
-  }
-
-  private mapToDomain(mongoDoc: any): Usuario {
-    return {
-      id: mongoDoc._id.toString(),
-      nombre: mongoDoc.nombre,
-      apellidos: mongoDoc.apellidos,
-      pass: mongoDoc.pass,
-      nickname: mongoDoc.nickname,
-      rol: mongoDoc.rol,
-      id_entrenador: mongoDoc.id_entrenador ? mongoDoc.id_entrenador.toString() : undefined,
-    };
+    const inicial = this.usuarios.length;
+    this.usuarios = this.usuarios.filter(
+      (u) => u.nickname.toLowerCase() !== nickname.toLowerCase(),
+    );
+    return this.usuarios.length < inicial;
   }
 }

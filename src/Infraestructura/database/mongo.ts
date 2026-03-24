@@ -9,10 +9,10 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 // Configuramos escuchadores para que el servidor nos avise por consola si
 // la base de datos se cae o vuelve, sin que el proceso de Node.js se detenga.
 // ============================================================================
-mongoose.connection.on('connected', () => console.log('✅ Mongoose CONECTADO a MongoDB'));
-mongoose.connection.on('error', (err) => console.error('❌ ERROR en Mongoose:', err));
+mongoose.connection.on('connected', () => console.log(' Mongoose CONECTADO a MongoDB'));
+mongoose.connection.on('error', (err) => console.error(' ERROR en Mongoose:', err));
 mongoose.connection.on('disconnected', () => {
-  console.warn('⚠️ MongoDB DESCONECTADO. Intentando RECONECTAR...');
+  console.warn(' MongoDB DESCONECTADO. Intentando RECONECTAR...');
 });
 
 export const connectMongoDB = async (): Promise<void> => {
@@ -25,15 +25,10 @@ export const connectMongoDB = async (): Promise<void> => {
       socketTimeoutMS: 45000, // Tiempo antes de cerrar conexiones inactivas
     });
 
-    console.log(`Base de datos lista en: ${config.MONGO_URI}`);
+    console.log('Base de datos MongoDB conectada correctamente');
   } catch (error) {
-    // IMPORTANTE: Aquí solo hacemos el exit si es el arranque inicial y falla.
-    // Una vez arrancado, mongoose.connection.on('error') se encargará de avisar.
     console.error('Error crítico en la conexión inicial a MongoDB:', error);
-
-    // Si quieres que el servidor arranque aunque la DB esté caída (modo supervivencia):
-    // Quita el process.exit(1) de aquí abajo.
-    // process.exit(1);
+    throw error;
   }
 };
 

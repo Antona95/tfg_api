@@ -10,7 +10,7 @@ export class SesionMongoRepository implements SesionRepository {
   async findSesionesByUsuario(idUsuario: string): Promise<SesionEntrenamiento[]> {
     const sesiones = await SesionModel.find({ id_usuario: idUsuario })
       .populate('ejercicios.id_ejercicio')
-      .sort({ fecha: -1 })
+      .sort({ createdAt: -1 })
       .lean();
 
     return sesiones.map((doc) => ({
@@ -41,7 +41,7 @@ export class SesionMongoRepository implements SesionRepository {
 
     const doc = await SesionModel.findOne({
       id_usuario: idUsuario,
-      fecha: { $gte: inicioHoy, $lte: finHoy },
+      createdAt: { $gte: inicioHoy, $lte: finHoy },
     })
       .populate('ejercicios.id_ejercicio')
       .lean();

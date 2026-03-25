@@ -21,8 +21,6 @@ export class CrearSesionUseCase {
     titulo: string,
     ejercicios: any[],
   ): Promise<SesionEntrenamiento> {
-    // 👈 aquí faltaba la llave
-
     const nuevaSesion = await this.sesionRepository.crearDesdeApp({
       idUsuario,
       titulo,
@@ -35,7 +33,6 @@ export class CrearSesionUseCase {
       })),
     });
 
-    // --- LIMPIEZA DE CACHÉ ---
     this.limpiarCache(idUsuario);
 
     return nuevaSesion;

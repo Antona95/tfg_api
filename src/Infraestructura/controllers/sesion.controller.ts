@@ -39,6 +39,8 @@ export class SesionController {
     if (!validacion.success) return res.status(400).json({ errores: validacion.error.issues });
 
     const datos = validacion.data;
+    console.log('DATOS VALIDADOS:', datos);
+
     try {
       const nueva = await this.crearSesionUseCase.executeDesdeApp(
         datos.idUsuario,
